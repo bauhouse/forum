@@ -10,6 +10,10 @@
 		private static $_sections;
 		
 		
+		public static function showInRolePermissions(){
+			return true;
+		}
+
 		public static function about(){
 					
 			return array(
@@ -87,7 +91,7 @@
 			$Members->initialiseMemberObject();
 			
 			// Make sure we dont accidently use an expired token
-			extension_Members::purgeTokens();
+			extension_Members::purgeCodes();
 
 			$em = new EntryManager($this->_Parent);
 			$entry = end($em->fetch((int)$Members->Member->get('id')));

@@ -4,6 +4,10 @@
 
 	Class eventForum_Post extends Event{
 
+		public static function showInRolePermissions(){
+			return true;
+		}
+
 		public static function about(){
 					
 			return array(

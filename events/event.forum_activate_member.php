@@ -11,6 +11,10 @@
 		
 		const ROOTELEMENT = 'activate-member';
 		
+		public static function showInRolePermissions(){
+			return true;
+		}
+
 		public static function about(){
 					
 			return array(
@@ -89,12 +93,12 @@
 			$Members->initialiseMemberObject();
 			
 			// Make sure we dont accidently use an expired token
-			extension_Members::purgeTokens();
+			extension_Members::purgeCodes();
 
 			$activation_row = $db->query(
 				sprintf(
-					"SELECT * FROM `tbl_members_login_tokens` WHERE `token` = '%s' AND `member_id` = %d LIMIT 1", 
-					$db->escape($_POST['fields']['code']), 
+					"SELECT * FROM `tbl_members_codes` WHERE `token` = '%s' AND `member_id` = %d LIMIT 1",
+					$db->escape($_POST['fields']['code']),
 					(int)$Members->Member->get('id')
 				)
 			)->current();
