@@ -131,6 +131,8 @@
 		
 		protected function __trigger(){
 
+			$role_permission = 0;
+
 			$result = new XMLElement('forum-post');
 			
 			$fields = $_POST['fields'];
@@ -200,7 +202,7 @@
 			
 			if(isset($action['forum-new-discussion'])):
 
-				if($role->canPerformEventAction('forum', 'start_discussion')){
+				if($role->canPerformEventAction('forum', 'start_discussion', $role_permission)){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, NULL, $cookie)) return $result;
 
@@ -227,7 +229,7 @@
 				
 				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->Member->get('id'), $entry_id) : false);
 				
-				if($role->canPerformEventAction('forum', 'edit_discussion') || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_discussion'))){
+				if($role->canPerformEventAction('forum', 'edit_discussion', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_discussion', $role_permission))){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $entry_id, $cookie)) return $result;
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $discussion['comment-id'], $cookie)) return $result;
@@ -246,7 +248,7 @@
 
 				$isOpen = Symphony::Database()->fetchVar('value', 0, 'SELECT `value` FROM `sym_entries_data_'.$oDiscussion->getLockedField().'` WHERE `entry_id` = '.$oDiscussion->Entry()->get('id').' LIMIT 1');
 								
-				if($role->canPerformEventAction('forum', 'add_comment') && $isOpen == 'no'){
+				if($role->canPerformEventAction('forum', 'add_comment', $role_permission) && $isOpen == 'no'){
 
 					//if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $comment[$comment_discussion_id_field_handle], $cookie)) return $result;
 					
@@ -289,7 +291,7 @@
 				
 				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->Member->get('id'), $entry_id) : false);
 				
-				if($role->canPerformEventAction('forum', 'edit_comment') || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_comment'))){
+				if($role->canPerformEventAction('forum', 'edit_comment', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_comment', $role_permission))){
 
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $entry_id, $cookie)) return $result;
 				
