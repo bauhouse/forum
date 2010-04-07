@@ -43,7 +43,6 @@
 				if(!$members->Member) $members->initialiseMemberObject();
 				$member_id = $members->Member->get('id');
 				
-				
 				$member_read_cutoff_date = Symphony::Database()->fetchVar('local', 0, 
 					sprintf("SELECT `local` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d LIMIT 1", Discussion::getUnreadCutoffField(), $member_id)
 				);
@@ -54,6 +53,7 @@
 					));
 				}
 				
+				$discussion_last_active_field = Symphony::Configuration()->get('discussion-last-active-field', 'forum');
 				
 				$pre_dated_discussions = Symphony::Database()->fetchCol('entry_id', 
 					sprintf(
@@ -61,18 +61,20 @@
 						FROM `tbl_entries_data_%d` 
 						WHERE `entry_id` IN (".@implode(',', $param_pool['ds-forum-discussions']).") 
 						AND `local` <= '%s'",
-						14, 
+						$discussion_last_active_field,
 						$member_read_cutoff_date
 					)
 				);
-				
+
+				$read_discussions = @implode(',', array_diff($param_pool['ds-forum-discussions'], $pre_dated_discussions));
+				if (empty($read_discussions)) $read_discussions = 0;
+
 				$read = $this->_Parent->Database->fetch(
 					sprintf(
 						"SELECT * FROM `tbl_forum_read_discussions` 
 						WHERE `member_id` = $member_id 
 						AND `discussion_id` IN (%s)",
-						
-						@implode(',', array_diff($param_pool['ds-forum-discussions'], $pre_dated_discussions))
+						$read_discussions
 					)
 				);
 				
