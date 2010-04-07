@@ -35,6 +35,8 @@
 		
 		protected function __trigger(){
 
+			$role_permission = 2;
+
 			$success = false;
 			$action = $_REQUEST['forum-action'];	
 			
@@ -99,7 +101,7 @@
 							if($action == 'unpin') $action_resolved = 'pin';
 							elseif($action == 'open') $action_resolved = 'close';
 							
-							if($role->canPerformEventAction('forum', $action_resolved.'_discussion')){ 
+							if($role->canPerformEventAction('forum', $action_resolved.'_discussion', $role_permission)){
 								$Forum->Discussion->$action($discussion_id);
 								$success = true;
 							}
@@ -110,7 +112,7 @@
 								
 								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$members->Member->get('id'), $discussion_id) : false);
 								
-								if($role->canPerformEventAction('forum', $action.'_discussion') || ($is_owner && $role->canPerformEventAction('forum', $action.'_own_discussion'))){
+								if($role->canPerformEventAction('forum', $action.'_discussion', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', $action.'_own_discussion', $role_permission))){
 									$Forum->Discussion->remove($discussion_id);
 									redirect(URL . '/forum/');
 								}
@@ -125,7 +127,7 @@
 							
 							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$members->Member->get('id'), $comment_id) : false);
 							
-							if($role->canPerformEventAction('forum', 'remove_comment') || ($is_owner && $role->canPerformEventAction('forum', 'remove_own_comment'))){
+							if($role->canPerformEventAction('forum', 'remove_comment', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', 'remove_own_comment', $role_permission))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
 								$success = true;								
 							}
