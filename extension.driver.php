@@ -258,6 +258,7 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$div->appendChild($this->createFieldSelector('Comment Creation Date', 'comment-creation-date-field', 'date', $sections));
+			$div->appendChild($this->createFieldSelector('Comment Text Field', 'comment-field', 'textarea', $sections));
 			$group->appendChild($div);
 
 			$context['wrapper']->appendChild($group);
