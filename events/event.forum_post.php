@@ -246,7 +246,7 @@
 
 				$oDiscussion = new Discussion($this->_Parent, $comment[$comment_discussion_id_field_handle]);
 
-				$isOpen = Symphony::Database()->fetchVar('value', 0, 'SELECT `value` FROM `sym_entries_data_'.$oDiscussion->getLockedField().'` WHERE `entry_id` = '.$oDiscussion->Entry()->get('id').' LIMIT 1');
+				$isOpen = Symphony::Database()->fetchVar('value', 0, 'SELECT `value` FROM `tbl_entries_data_'.$oDiscussion->getLockedField().'` WHERE `entry_id` = '.$oDiscussion->Entry()->get('id').' LIMIT 1');
 								
 				if($role->canPerformEventAction('forum', 'add_comment', $role_permission) && $isOpen == 'no'){
 
