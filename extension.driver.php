@@ -9,7 +9,7 @@
 
 		public function about(){
 			return array('name' => 'Forum',
-						 'version' => '1.0',
+						 'version' => '2.0 Alpha',
 						 'release-date' => '2008-04-12',
 						 'author' => array('name' => 'Symphony Team',
 										   'website' => 'http://www.symphony21.com',
@@ -32,163 +32,29 @@
 
 		public function install(){
 
-			return Symphony::Database()->query("CREATE TABLE `tbl_forum_read_discussions` (
-		 			 `id` int(11) unsigned NOT NULL auto_increment,
-		 			 `member_id` int(11) unsigned NOT NULL,
-					  `discussion_id` int(11) unsigned NOT NULL,
-					  `last_viewed` int(11) unsigned NOT NULL,
-					  `comments` int(11) unsigned NOT NULL,
-				  PRIMARY KEY  (`id`),
-		  		  KEY `member_id` (`member_id`,`discussion_id`)
-				 )");
+			return Symphony::Database()->query(
+				"CREATE TABLE `tbl_forum_read_discussions` (
+					`id` int(11) unsigned NOT NULL auto_increment,
+					`member_id` int(11) unsigned NOT NULL,
+					`discussion_id` int(11) unsigned NOT NULL,
+					`last_viewed` int(11) unsigned NOT NULL,
+					`comments` int(11) unsigned NOT NULL,
+					PRIMARY KEY  (`id`),
+					KEY `member_id` (`member_id`,`discussion_id`)
+				)");
 
 		}
 
 		public function getSubscribedDelegates(){
 			return array(
 
-						//array(
-						//	'page' => '/blueprints/events/new/',
-						//	'delegate' => 'AppendEventFilter',
-						//	'callback' => 'addFilterToEventEditor'
-						//),
-
-						//array(
-						//	'page' => '/blueprints/events/edit/',
-						//	'delegate' => 'AppendEventFilter',
-						//	'callback' => 'addFilterToEventEditor'
-						//),	
-
-						//array(
-						//	'page' => '/blueprints/events/new/',
-						//	'delegate' => 'AppendEventFilterDocumentation',
-						//	'callback' => 'addFilterDocumentationToEvent'
-						//),
-
-						//array(
-						//	'page' => '/blueprints/events/edit/',
-						//	'delegate' => 'AppendEventFilterDocumentation',
-						//	'callback' => 'addFilterDocumentationToEvent'
-						//),
-
-						array(
-							'page' => '/system/preferences/',
-							'delegate' => 'AddCustomPreferenceFieldsets',
-							'callback' => 'appendPreferences'
-						),
-
-						array(
-							'page' => '/extension/members/new/',
-							'delegate' => 'MemberRolePermissionFieldsetsNew',
-							'callback' => 'appendMemberRolePermissionFieldsets'
-						),
-						
-						array(
-							'page' => '/extension/members/edit/',
-							'delegate' => 'MemberRolePermissionFieldsetsEdit',
-							'callback' => 'appendMemberRolePermissionFieldsets'
-						),						
-
-/*						array(
-							'page' => '/frontend/',
-							'delegate' => 'EventPreSaveFilter',
-							'callback' => 'processPreSaveEventData'
-						),
-
-						array(
-							'page' => '/frontend/',
-							'delegate' => 'EventPostSaveFilter',
-							'callback' => 'processPostSaveEventData'
-						),			*/			
-			);
-		}
-
-		public function appendMemberRolePermissionFieldsets($context){
-			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings type-file');
-			$fieldset->appendChild(new XMLElement('legend', 'Forum Permissions'));	
-		
-			$aTableHead = array(
-				array('Action', 'col'),
-				array('Allowed', 'col'),
-			);	
-
-			
-			$permissions = $context['permissions']['forum'];
-
-			$group = new XMLElement('div', NULL, array('class' => 'group'));
-			
-			/** FIRST TABLE **/			
-			$aTableBody = extension_Members::buildRolePermissionTableBody(			
 				array(
-					array('Start New Discussion', 'forum', 'start_discussion', isset($permissions['start_discussion'])),
-					array('Edit Discussions', 'forum', 'edit_discussion', isset($permissions['edit_discussion'])),
-					array('Edit Own Discussions*', 'forum', 'edit_own_discussion', isset($permissions['edit_own_discussion'])),
-					array('Remove Discussions', 'forum', 'remove_discussion', isset($permissions['remove_discussion'])),
-					array('Remove Own Discussions*', 'forum', 'remove_own_discussion', isset($permissions['remove_own_discussion'])),
-				)
+					'page' => '/system/preferences/',
+					'delegate' => 'AddCustomPreferenceFieldsets',
+					'callback' => 'appendPreferences'
+				),
+
 			);
-			
-
-			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody),
-								'role-permissions narrow'
-						);
-				
-			$group->appendChild($table);
-			
-			
-			/** SECOND TABLE **/			
-			$aTableBody = extension_Members::buildRolePermissionTableBody(			
-				array(
-					array('Add Comment', 'forum', 'add_comment', isset($permissions['add_comment'])),
-					array('Edit Comment', 'forum', 'edit_comment', isset($permissions['edit_comment'])),
-					array('Edit Own Comment*', 'forum', 'edit_own_comment', isset($permissions['edit_own_comment'])),
-					array('Remove Comment', 'forum', 'remove_comment', isset($permissions['remove_comment'])),
-					array('Remove Own Comment*', 'forum', 'remove_own_comment', isset($permissions['remove_own_comment'])),
-				)
-			);
-			
-			
-			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody),
-								'role-permissions narrow'
-						);
-				
-			$group->appendChild($table);			
-
-
-			/** THIRD TABLE **/			
-			$aTableBody = extension_Members::buildRolePermissionTableBody(			
-				array(
-					array('Pin/Unpin Discussion', 'forum', 'pin_discussion', isset($permissions['pin_discussion'])),
-					array('Open/Close Discussion', 'forum', 'close_discussion', isset($permissions['close_discussion'])),
-				)
-			);
-			
-			
-			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody),
-								'role-permissions narrow'
-						);
-				
-			$group->appendChild($table);
-
-			
-			$fieldset->appendChild($group);	
-		
-
-			$fieldset->appendChild(new XMLElement('p', '* <em>Does not apply if global edit/remove is allowed</em>', array('class' => 'help')));
-			
-			$context['form']->appendChild($fieldset);
-						
 		}
 
 		public function appendPreferences($context){
@@ -287,72 +153,6 @@
 			$label->appendChild(Widget::Select('settings[forum]['.$handle.']', $options));	
 			return $label;		
 		}
-
-/*
-		public function processPreSaveEventData($context){
-
-			if(in_array('sync-discussion-id', $context['event']->eParamFILTERS)){
-				if(defined('__FORUM_NEW_DISCUSSION_ID__') && empty($context['fields']['discussion-id'])){
-					$context['fields']['discussion-id'] = __FORUM_NEW_DISCUSSION_ID__;
-				}
-			}
-
-			if(in_array('check-poster-credentials', $context['event']->eParamFILTERS)){
-				$members =& $this->_Parent->ExtensionManager->create('members');
-				$members->initialiseCookie();
-				$loggedin = $members->isLoggedIn();
-
-				$poster = $members->initialiseMemberObject();
-
-				if(isset($context['fields']['created-by']) && $poster->get('id') != (int)$context['fields']['created-by']){
-					$context['messages'][] = array('check-poster-credentials', false, 'member cookie id did not match supplied member id');
-				}
-
-				else $context['messages'][] = array('check-poster-credentials', true);
-
-			}
-
-		}
-
-		public function processPostSaveEventData($context){	
-
-			if(in_array('update-discussion-meta', $context['event']->eParamFILTERS)){
-				$success = true;
-
-				$entryManager = new EntryManager($this->_Parent);
-				$discussion = $entryManager->fetch((int)$context['fields']['discussion-id'], NULL, NULL, NULL, NULL, NULL, false, true);
-
-				if(count($discussion) < 1) $success = false;
-
-				$member_id = ($context['fields']['created-by'] ? $context['fields']['created-by'] : NULL);
-
-				$members =& $this->_Parent->ExtensionManager->create('members');
-				$members->initialiseCookie();
-				$loggedin = $members->isLoggedIn();
-
-				if(!$poster = $members->initialiseMemberObject()) $success = false;
-
-				if($success){
-					$username = $poster->getData($members->usernameField());
-					$username = $username['value'];
-
-					$discussion[0]->setData(143, array('member_id' => $poster->get('id'), 'username' => $username));
-					$discussion[0]->setData(119, array('value' => DateTimeObj::get('c'), 'local' => strtotime(DateTimeObj::get('c')), 'gmt' => strtotime(DateTimeObj::getGMT('c'))));
-					$discussion[0]->commit();
-
-					$this->Discussion->updateRead($poster->get('id'), $discussion[0]->get('id'));
-
-				}
-
-				$context['messages'][] = array('update-discussion-meta', $success);
-			}
-
-			if(in_array('publicise-new-discussion-id', $context['event']->eParamFILTERS)){
-				define_safe('__FORUM_NEW_DISCUSSION_ID__', $context['entry']->get('id'));
-			}
-
-		}
-*/
 
 		public function getDiscussionSectionID(){
 			return (int)Symphony::Configuration()->get('discussion-section', 'forum');
