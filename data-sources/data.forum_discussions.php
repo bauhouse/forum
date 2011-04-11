@@ -40,12 +40,12 @@
 			if(!is_array(self::$_fields)){
 				self::$_fields = array();
 
-				$rows = Symphony::Database()->query("SELECT s.handle AS `section`, f.`element_name` AS `handle`, f.`id` 
+				$rows = ASDCLoader::instance()->query("SELECT s.handle AS `section`, f.`element_name` AS `handle`, f.`id` 
 					FROM `tbl_fields` AS `f` 
 					LEFT JOIN `tbl_sections` AS `s` ON f.parent_section = s.id 
 					ORDER BY `id` ASC");
 
-				if(is_array($rows) && !empty($rows)){
+				if($rows->length() > 0){
 					foreach($rows as $r){
 						self::$_fields[$r->section][$r->handle] = $r->id;
 					}							
@@ -55,11 +55,11 @@
 			if(!is_array(self::$_sections)){
 				self::$_sections = array();
 
-				$rows = Symphony::Database()->query("SELECT s.handle, s.id 
+				$rows = ASDCLoader::instance()->query("SELECT s.handle, s.id 
 					FROM `tbl_sections` AS `s`
 					ORDER BY s.id ASC");
 
-				if(is_array($rows) && !empty($rows)){
+				if($rows->length() > 0){
 					foreach($rows as $r){
 						self::$_sections[$r->handle] = $r->id;
 					}							
@@ -72,8 +72,8 @@
 		
 			self::__init();
 			
-			$db = Symphony::Database();
-			
+			$db = ASDCLoader::instance();
+	
 			$sql = "SELECT SQL_CALC_FOUND_ROWS
 						pinned.entry_id AS `id`,
 						pinned.value AS `pinned`,
@@ -125,14 +125,14 @@
 				);	
 			}
 			catch(Exception $e){
-				$result->appendChild(new XMLElement('error', General::sanitize(vsprintf('%d: %s on query %s', $db->getlastError()))));
+				$result->appendChild(new XMLElement('error', General::sanitize(vsprintf('%d: %s on query %s', $db->lastError()))));
 				return $result;
 			}
 
-			if(empty($rows) && strlen(trim($dsParamFILTERS['id'])) > 0){
+			if($rows->length() == 0 && strlen(trim($dsParamFILTERS['id'])) > 0){
 				$this->__redirectToErrorPage();
 			}
-			elseif(empty($rows)){
+			elseif($rows->length() == 0){
 				return $this->emptyXMLSet();
 			}
 		
