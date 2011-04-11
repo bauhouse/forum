@@ -71,7 +71,7 @@
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 		
 			self::__init();
-	
+			
 			$db = ASDCLoader::instance();
 	
 			$sql = "SELECT SQL_CALC_FOUND_ROWS
@@ -81,9 +81,11 @@
 						creation_date.local AS `creation-date`,
 						last_active.local AS `last-active`,
 						created_by.relation_id AS `created-by-member-id`,
-						created_by.relation_id AS `created-by-username`,
+						created_by_username.entry_id AS `created-by-id`,
+						created_by_username.value AS `created-by-username`,
 						last_post.relation_id AS `last-post-member-id`,
-						last_post.relation_id AS `last-post-username`,
+						last_post_username.entry_id AS `last-post-id`,
+						last_post_username.value AS `last-post-username`,
 						topic.value AS `topic`,
 						COUNT(comments.relation_id) AS `comments`
 					
@@ -92,7 +94,9 @@
 					LEFT JOIN `tbl_entries_data_%d` AS `creation_date` ON pinned.entry_id = creation_date.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `last_active` ON pinned.entry_id = last_active.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `created_by` ON pinned.entry_id = created_by.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `created_by_username` ON created_by_username.entry_id = created_by.relation_id
 					LEFT JOIN `tbl_entries_data_%d` AS `last_post` ON pinned.entry_id = last_post.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `last_post_username` ON last_post_username.entry_id = last_post.relation_id
 					LEFT JOIN `tbl_entries_data_%d` AS `topic` ON pinned.entry_id = topic.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `comments` ON pinned.entry_id = comments.relation_id
 					WHERE 1 %s
@@ -109,7 +113,9 @@
 						self::findFieldID('creation-date', 'discussions'),
 						self::findFieldID('last-active', 'discussions'),
 						self::findFieldID('created-by', 'discussions'),
+						self::findFieldID('username', 'members'),	
 						self::findFieldID('last-post', 'discussions'),
+						self::findFieldID('username', 'members'),	
 						self::findFieldID('topic', 'discussions'),
 						self::findFieldID('parent-id', 'comments'),	
 						(isset($this->dsParamFILTERS['id']) && (int)$this->dsParamFILTERS['id'] > 0 ? " AND pinned.entry_id  = ".(int)$this->dsParamFILTERS['id'] : NULL),					
@@ -167,7 +173,7 @@
 			$param_pool['ds-' . $this->dsParamROOTELEMENT] = DatabaseUtilities::resultColumn($rows, 'id');
 		
 			foreach($rows as $r){
-				
+			
 				$entry = new XMLElement('entry', NULL, array('id' => $r->id, 'comments' => $r->comments));
 				
 				$entry->appendChild(
@@ -188,7 +194,7 @@
 				
 				$result->appendChild($entry);
 			}
-		
+			
 			return $result;
 		}
 	}
