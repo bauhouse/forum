@@ -80,10 +80,10 @@
 						closed.value AS `closed`, 
 						creation_date.local AS `creation-date`,
 						last_active.local AS `last-active`,							
-						created_by.member_id AS `created-by-member-id`,
-						created_by.username AS `created-by-username`,
-						last_post.member_id AS `last-post-member-id`,
-						last_post.username AS `last-post-username`,							
+						created_by.relation_id AS `created-by-member-id`,
+						created_by.relation_id AS `created-by-username`,
+						last_post.relation_id AS `last-post-member-id`,
+						last_post.relation_id AS `last-post-username`,							
 						topic.value AS `topic`,
 						COUNT(comments.relation_id) AS `comments`
 					
