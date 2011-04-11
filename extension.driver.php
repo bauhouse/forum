@@ -1,7 +1,6 @@
 <?php
 
 	include_once(TOOLKIT . '/class.entrymanager.php');
-	include_once(DOCROOT . '/extensions/library/lib/class.configurationaccessor.php');
 	include_once('lib/class.discussion.php');
 	
 	Class extension_forum extends Extension{
