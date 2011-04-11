@@ -74,25 +74,25 @@
 	
 			$db = ASDCLoader::instance();
 	
-			$sql = "SELECT SQL_CALC_FOUND_ROWS 
-						pinned.entry_id AS `id`, 
-						pinned.value AS `pinned`, 
-						closed.value AS `closed`, 
+			$sql = "SELECT SQL_CALC_FOUND_ROWS
+						pinned.entry_id AS `id`,
+						pinned.value AS `pinned`,
+						closed.value AS `closed`,
 						creation_date.local AS `creation-date`,
-						last_active.local AS `last-active`,							
+						last_active.local AS `last-active`,
 						created_by.relation_id AS `created-by-member-id`,
 						created_by.relation_id AS `created-by-username`,
 						last_post.relation_id AS `last-post-member-id`,
-						last_post.relation_id AS `last-post-username`,							
+						last_post.relation_id AS `last-post-username`,
 						topic.value AS `topic`,
 						COUNT(comments.relation_id) AS `comments`
 					
 					FROM `tbl_entries_data_%d` AS `pinned`
 					LEFT JOIN `tbl_entries_data_%d` AS `closed` ON pinned.entry_id = closed.entry_id
-					LEFT JOIN `tbl_entries_data_%d` AS `creation_date` ON pinned.entry_id = creation_date.entry_id	
-					LEFT JOIN `tbl_entries_data_%d` AS `last_active` ON pinned.entry_id = last_active.entry_id					
-					LEFT JOIN `tbl_entries_data_%d` AS `created_by` ON pinned.entry_id = created_by.entry_id	
-					LEFT JOIN `tbl_entries_data_%d` AS `last_post` ON pinned.entry_id = last_post.entry_id	
+					LEFT JOIN `tbl_entries_data_%d` AS `creation_date` ON pinned.entry_id = creation_date.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `last_active` ON pinned.entry_id = last_active.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `created_by` ON pinned.entry_id = created_by.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `last_post` ON pinned.entry_id = last_post.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `topic` ON pinned.entry_id = topic.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `comments` ON pinned.entry_id = comments.relation_id
 					WHERE 1 %s
