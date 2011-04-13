@@ -78,6 +78,9 @@
 				exit();
 			}
 
+			$member = $Members->Member->Member;
+			$member_id = $member->get('id');
+
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 		
 			self::__init();
@@ -110,6 +113,7 @@
 					LEFT JOIN `tbl_entries_data_%d` AS `topic` ON pinned.entry_id = topic.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `comments` ON pinned.entry_id = comments.relation_id
 					WHERE 1 %s
+					AND created_by.relation_id = %d
 					GROUP BY pinned.entry_id
 					ORDER BY pinned.value ASC, last_active.local DESC
 					LIMIT %d, %d";
@@ -129,6 +133,7 @@
 						self::findFieldID('topic', 'discussions'),
 						self::findFieldID('parent-id', 'comments'),	
 						(isset($this->dsParamFILTERS['id']) && (int)$this->dsParamFILTERS['id'] > 0 ? " AND pinned.entry_id  = ".(int)$this->dsParamFILTERS['id'] : NULL),					
+						(int)$member_id,			
 						max(0, ($this->dsParamSTARTPAGE - 1) * $this->dsParamLIMIT),
 						$this->dsParamLIMIT
 					)
