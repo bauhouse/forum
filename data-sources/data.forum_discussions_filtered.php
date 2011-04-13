@@ -68,6 +68,16 @@
 		}
 		
 		public function grab(&$param_pool){
+
+			$Members = Symphony::ExtensionManager()->create('members');
+			$Members->Member->initialiseCookie();
+			
+			// If not logged in, redirect to 403 Forbidden page
+			if($Members->Member->isLoggedIn() !== true){
+				redirect(URL . '/forbidden/');
+				exit();
+			}
+
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 		
 			self::__init();
