@@ -68,54 +68,41 @@
 		}
 		
 		public function grab(&$param_pool){
-
-			/*
-			$Members = Frontend::instance()->ExtensionManager->create('members');
-			$Members->initialiseCookie();
-
-			if($Members->isLoggedIn() !== true){
-				// Oi! you can't be here
-				redirect(URL . '/forbidden/');
-				exit();
-			}
-			*/
-
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 		
 			self::__init();
-	
+			
 			$db = ASDCLoader::instance();
-		
-			$sql = 'SELECT SQL_CALC_FOUND_ROWS 
-						pinned.entry_id AS `id`, 
-						pinned.value AS `pinned`, 
-						closed.value AS `closed`, 
+	
+			$sql = "SELECT SQL_CALC_FOUND_ROWS
+						pinned.entry_id AS `id`,
+						pinned.value AS `pinned`,
+						closed.value AS `closed`,
 						creation_date.local AS `creation-date`,
-						last_active.local AS `last-active`,							
+						last_active.local AS `last-active`,
 						created_by.relation_id AS `created-by-member-id`,
 						created_by_username.entry_id AS `created-by-id`,
 						created_by_username.value AS `created-by-username`,
 						last_post.relation_id AS `last-post-member-id`,
 						last_post_username.entry_id AS `last-post-id`,
 						last_post_username.value AS `last-post-username`,
-						topic.value AS `topic`
+						topic.value AS `topic`,
+						COUNT(comments.relation_id) AS `comments`
 					
 					FROM `tbl_entries_data_%d` AS `pinned`
 					LEFT JOIN `tbl_entries_data_%d` AS `closed` ON pinned.entry_id = closed.entry_id
-					LEFT JOIN `tbl_entries_data_%d` AS `creation_date` ON pinned.entry_id = creation_date.entry_id	
-					LEFT JOIN `tbl_entries_data_%d` AS `last_active` ON pinned.entry_id = last_active.entry_id					
+					LEFT JOIN `tbl_entries_data_%d` AS `creation_date` ON pinned.entry_id = creation_date.entry_id
+					LEFT JOIN `tbl_entries_data_%d` AS `last_active` ON pinned.entry_id = last_active.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `created_by` ON pinned.entry_id = created_by.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `created_by_username` ON created_by_username.entry_id = created_by.relation_id
 					LEFT JOIN `tbl_entries_data_%d` AS `last_post` ON pinned.entry_id = last_post.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `last_post_username` ON last_post_username.entry_id = last_post.relation_id
 					LEFT JOIN `tbl_entries_data_%d` AS `topic` ON pinned.entry_id = topic.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `comments` ON pinned.entry_id = comments.relation_id
-					LEFT JOIN `tbl_entries_data_%d` AS `discussion_comments_member` ON comments.entry_id = discussion_comments_member.entry_id	
 					WHERE 1 %s
-					AND (created_by.member_id = %13$d || discussion_comments_member.member_id = %13$d)
 					GROUP BY pinned.entry_id
 					ORDER BY pinned.value ASC, last_active.local DESC
-					LIMIT %14$d, %15$d';
+					LIMIT %d, %d";
 				
 			try{
 				$rows = $db->query(
@@ -131,20 +118,21 @@
 						self::findFieldID('username', 'members'),	
 						self::findFieldID('topic', 'discussions'),
 						self::findFieldID('parent-id', 'comments'),	
-						(isset($this->dsParamFILTERS['id']) && (int)$this->dsParamFILTERS['id'] > 0 ? " AND pinned.entry_id  = ".(int)$this->dsParamFILTERS['id'] : NULL),		
-//						(int)$Members->Member->get('id'),
-						(int)1,
+						(isset($this->dsParamFILTERS['id']) && (int)$this->dsParamFILTERS['id'] > 0 ? " AND pinned.entry_id  = ".(int)$this->dsParamFILTERS['id'] : NULL),					
 						max(0, ($this->dsParamSTARTPAGE - 1) * $this->dsParamLIMIT),
 						$this->dsParamLIMIT
 					)
-				);
+				);	
 			}
 			catch(Exception $e){
 				$result->appendChild(new XMLElement('error', General::sanitize(vsprintf('%d: %s on query %s', $db->lastError()))));
 				return $result;
 			}
 
-			if($rows->length() == 0){
+			if($rows->length() == 0 && strlen(trim($dsParamFILTERS['id'])) > 0){
+				$this->__redirectToErrorPage();
+			}
+			elseif($rows->length() == 0){
 				return $this->emptyXMLSet();
 			}
 		
@@ -185,25 +173,8 @@
 			$param_pool['ds-' . $this->dsParamROOTELEMENT] = DatabaseUtilities::resultColumn($rows, 'id');
 		
 			foreach($rows as $r){
-				
-				// Need to do a seperate query to find the comment counts.
-				/*
-				try{
-					$comments = $db->query(
-						sprintf(
-							"SELECT COUNT(*) AS `count` FROM `tbl_entries_data_%d` WHERE `relation_id` = %d ",
-							self::findFieldID('parent-id', 'comments'),	
-							$r->id
-						)
-					)->current()->count;
-				}
-				catch(Exception $e){
-					$result->appendChild(new XMLElement('error', General::sanitize(vsprintf('%d: %s on query %s', $db->lastError()))));
-					return $result;
-				}
-				*/				
-				
-				$entry = new XMLElement('entry', NULL, array('id' => $r->id, 'comments' => $comments));
+			
+				$entry = new XMLElement('entry', NULL, array('id' => $r->id, 'comments' => $r->comments));
 				
 				$entry->appendChild(
 					new XMLElement('created-by', General::sanitize($r->{'created-by-username'}), array('id' => $r->{'created-by-member-id'}))
@@ -223,7 +194,7 @@
 				
 				$result->appendChild($entry);
 			}
-		
+			
 			return $result;
 		}
 	}
