@@ -139,7 +139,7 @@
 			// Find information about the new last comment for this discussion
 			$last_comment = Symphony::Database()->fetchRow(0,
 				sprintf(
-					"SELECT d.local, d.gmt, d.value, m.member_id, m.username
+					"SELECT d.local, d.gmt, d.value, m.relation_id
 					FROM `tbl_entries_data_%d` AS `p`
 					LEFT JOIN `tbl_entries_data_%d` AS `d` ON p.entry_id = d.entry_id
 					LEFT JOIN `tbl_entries_data_%d` AS `m` ON p.entry_id = m.entry_id
@@ -166,7 +166,7 @@
 			*/
 			
 			// Update 'Last Post' (Member)
-			$this->_entry->setData(self::getLastPostField(), array('member_id' => $last_comment['member_id'], 'username' => $last_comment['username']));
+			$this->_entry->setData(self::getLastPostField(), array('relation_id' => $last_comment['relation_id']));
 			
 			// Update 'Last Active' (Date)
 			$this->_entry->setData(self::getLastActiveField(), array('local' => $last_comment['local'], 'gmt' => $last_comment['gmt'], 'value' => $last_comment['value']));
