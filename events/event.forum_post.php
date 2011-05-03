@@ -155,19 +155,19 @@
 
 			$action = $_POST['action'];
 			
-			$Forum =& $this->_Parent->ExtensionManager->create('forum');
-			$Members =& $this->_Parent->ExtensionManager->create('members');
+			$Forum = Symphony::ExtensionManager()->create('forum');
+			$Members = Symphony::ExtensionManager()->create('members');
 
-			$Members->initialiseCookie();
-			$isLoggedIn = $Members->isLoggedIn();
-		
-			$Members->initialiseMemberObject();		
+			$Members->Member->initialiseCookie();
+			$isLoggedIn = $Members->Member->isLoggedIn();
 			
-			if($isLoggedIn && is_object($Members->Member)){
-				$role_data = $Members->Member->getData($Members->roleField());
+			$Members->Member->initialiseMemberObject();	
+			
+			if($isLoggedIn && is_object($Members->Member->Member)){
+				$role_data = $Members->Member->Member->getData($Members::getConfigVar('role'));
 			}
 
-			$role = $Members->fetchRole(($isLoggedIn ? $role_data['role_id'] : 1), true);
+			$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
 			
 /*			if(!$loggedin || !$member = $Members->initialiseMemberObject()){
 				$result->setAttribute('result', 'error');
@@ -186,7 +186,7 @@
 	<action name="start_discussion" />
 	
 	
-	if($role->canPerformEventAction('forum', $action.'_discussion')){ 
+	if($role->canProcessEvent('forum', $action.'_discussion')){ 
 		$Forum->Discussion->$action($discussion_id);
 		$success = true;
 	}
@@ -202,7 +202,7 @@
 			
 			if(isset($action['forum-new-discussion'])):
 
-				if($role->canPerformEventAction('forum', 'start_discussion', $role_permission)){
+				if($role->canProcessEvent('forum', 'start_discussion', $role_permission)){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, NULL, $cookie)) return $result;
 
@@ -215,7 +215,7 @@
 						return $result;
 					}
 
-					if($isLoggedIn) $Forum->Discussion->updateRead($Members->Member->get('id'), $oDiscussion->get('id'));
+					if($isLoggedIn) $Forum->Discussion->updateRead($Members->Member->Member->get('id'), $oDiscussion->get('id'));
 				
 					$success = true;
 					$discussion_id = $oDiscussion->get('id');
@@ -227,9 +227,9 @@
 			
 			elseif(isset($action['forum-edit-discussion'])):
 				
-				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->Member->get('id'), $entry_id) : false);
+				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->Member->Member->get('id'), $entry_id) : false);
 				
-				if($role->canPerformEventAction('forum', 'edit_discussion', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_discussion', $role_permission))){
+				if($role->canProcessEvent('forum', 'edit_discussion', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_discussion', $role_permission))){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $entry_id, $cookie)) return $result;
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $discussion['comment-id'], $cookie)) return $result;
@@ -248,7 +248,7 @@
 
 				$isOpen = Symphony::Database()->fetchVar('value', 0, 'SELECT `value` FROM `tbl_entries_data_'.$oDiscussion->getLockedField().'` WHERE `entry_id` = '.$oDiscussion->Entry()->get('id').' LIMIT 1');
 								
-				if($role->canPerformEventAction('forum', 'add_comment', $role_permission) && $isOpen == 'no'){
+				if($role->canProcessEvent('forum', 'add_comment', $role_permission) && $isOpen == 'no'){
 
 					//if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $comment[$comment_discussion_id_field_handle], $cookie)) return $result;
 					
@@ -256,7 +256,7 @@
 						if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, NULL, $cookie)) return $result;
 
 						if($isLoggedIn){
-							$username_and_password = $Members->Member->getData($Members->usernameAndPasswordField());
+							$username_and_password = $Members->Member->Member->getData($Members->usernameAndPasswordField());
 							
 							$oDiscussion->Entry()->setData(Discussion::getLastActiveField(), array(
 								'local' => strtotime($oComment->get('creation_date')),
@@ -265,13 +265,13 @@
 							));
 							
 							$oDiscussion->Entry()->setData(Discussion::getLastPostField(), array(
-								'member_id' => $Members->Member->get('id'),
+								'member_id' => $Members->Member->Member->get('id'),
 								'username' => $username_and_password['username']
 							));
 							
 							$oDiscussion->Entry()->commit();
 							
-							$Forum->Discussion->updateRead($Members->Member->get('id'), $comment[$comment_discussion_id_field_handle]);
+							$Forum->Discussion->updateRead($Members->Member->Member->get('id'), $comment[$comment_discussion_id_field_handle]);
 						}
 				
 						$success = true;
@@ -289,9 +289,9 @@
 			
 			elseif(isset($action['forum-edit-comment'])):
 				
-				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->Member->get('id'), $entry_id) : false);
+				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->Member->Member->get('id'), $entry_id) : false);
 				
-				if($role->canPerformEventAction('forum', 'edit_comment', $role_permission) || ($is_owner && $role->canPerformEventAction('forum', 'edit_own_comment', $role_permission))){
+				if($role->canProcessEvent('forum', 'edit_comment', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_comment', $role_permission))){
 
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $entry_id, $cookie)) return $result;
 				
