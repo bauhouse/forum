@@ -66,8 +66,8 @@
 			return (int)Symphony::Configuration()->get('comment-creation-date-field', 'forum');
 		}
 
-		public static function getCommentMemberField(){
-			return (int)Symphony::Configuration()->get('comment-member-link-field', 'forum');	
+		public static function getCommentCreatedByField(){
+			return (int)Symphony::Configuration()->get('comment-created-by-field', 'forum');	
 		}
 
 		public static function getPinnedField(){
@@ -79,7 +79,7 @@
 		}
 
 		public static function getMemberField(){
-			return (int)Symphony::Configuration()->get('member-link-field', 'forum');
+			return (int)Symphony::Configuration()->get('created-by-field', 'forum');
 		}
 
 		public function open($discussion_id=NULL){
@@ -149,7 +149,7 @@
 			
 					self::getCommentField(),
 					self::getCommentCreationDateField(),
-					self::getCommentMemberField(),
+					self::getCommentCreatedByField(),
 					$discussion_id
 				)
 			);
@@ -199,7 +199,7 @@
 			
 			if(!$comment = $this->EntryManager->fetch($comment_id)) throw new Exception('Invalid Comment ID specified');
 
-			$member = $comment[0]->getData(self::getCommentMemberField());
+			$member = $comment[0]->getData(self::getCommentCreatedByField());
 
 			return ($member['member_id'] == $member_id);
 

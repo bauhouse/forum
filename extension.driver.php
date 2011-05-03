@@ -101,7 +101,7 @@
 			$group->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$div->appendChild($this->createFieldSelector('Discussion Member Link', 'member-link-field', 'selectbox_link', $sections));
+			$div->appendChild($this->createFieldSelector('Discussion Created By Link', 'created-by-field', 'selectbox_link', $sections));
 			$div->appendChild($this->createFieldSelector('Discussion Last Post', 'discussion-last-post-field', 'selectbox_link', $sections));
 			$group->appendChild($div);
 			
@@ -118,7 +118,7 @@
 				
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$div->appendChild($this->createFieldSelector('Comment Discussion Link', 'comment-discussion-link-field', 'selectbox_link', $sections));
-			$div->appendChild($this->createFieldSelector('Comment Member Link', 'comment-member-link-field', 'selectbox_link', $sections));
+			$div->appendChild($this->createFieldSelector('Comment Created By Link', 'comment-created-by-field', 'selectbox_link', $sections));
 			$group->appendChild($div);			
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
