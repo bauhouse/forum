@@ -65,10 +65,10 @@
 				if(isset($action)){
 					
 					if($isLoggedIn && is_object($members->Member->Member)){
-						$role_data = $members->Member->Member->getData($members->Member->roleField());
+						$role_data = $members->Member->Member->getData($members::getConfigVar('role'));
 					}
 
-					$role = $members->Member->fetchRole(($isLoggedIn ? $role_data['role_id'] : 1), true);
+					$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
 					
 					$result = new XMLElement('forum-utilities');
 					
@@ -99,7 +99,7 @@
 							if($action == 'unpin') $action_resolved = 'pin';
 							elseif($action == 'open') $action_resolved = 'close';
 							
-							if($role->canPerformEventAction('forum_utilities', 'edit', 2)){
+							if($role->canProcessEvent('forum_utilities', 'edit', 2)){
 								$Forum->Discussion->$action($discussion_id);
 								$success = true;
 							}
@@ -110,7 +110,7 @@
 								
 								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$members->Member->Member->get('id'), $discussion_id) : false);
 								
-								if($role->canPerformEventAction('forum_utilities', 'edit', 2) || ($is_owner && $role->canPerformEventAction('forum_utilities', 'edit', 1))){
+								if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 									$Forum->Discussion->remove($discussion_id);
 									redirect(URL . '/forum/');
 								}
@@ -125,7 +125,7 @@
 							
 							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$members->Member->Member->get('id'), $comment_id) : false);
 							
-							if($role->canPerformEventAction('forum_utilities', 'edit', 2) || ($is_owner && $role->canPerformEventAction('forum_utilities', 'edit', 1))){
+							if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
 								$success = true;								
 							}
