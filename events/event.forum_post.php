@@ -256,8 +256,6 @@
 						if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, NULL, $cookie)) return $result;
 
 						if($isLoggedIn){
-							$username_and_password = $Members->Member->Member->getData($Members->usernameAndPasswordField());
-							
 							$oDiscussion->Entry()->setData(Discussion::getLastActiveField(), array(
 								'local' => strtotime($oComment->get('creation_date')),
 								'gmt' => strtotime($oComment->get('creation_date_gmt')),
@@ -265,8 +263,7 @@
 							));
 							
 							$oDiscussion->Entry()->setData(Discussion::getLastPostField(), array(
-								'member_id' => $Members->Member->Member->get('id'),
-								'username' => $username_and_password['username']
+								'relation_id' => $Members->Member->Member->get('id')
 							));
 							
 							$oDiscussion->Entry()->commit();
