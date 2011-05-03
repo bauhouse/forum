@@ -30,18 +30,18 @@
 		function grab(&$param_pool){
 			$result = NULL;
 		
-			$Forum = $this->_Parent->ExtensionManager->create('forum');
-			$members = $this->_Parent->ExtensionManager->create('members');
-			
-			$members->initialiseCookie();
+			$Forum = Symphony::ExtensionManager()->create('forum');
+			$Members = Symphony::ExtensionManager()->create('members');
+		
+			$Members->Member->initialiseCookie();
 
-			if(!$members->isLoggedIn() || !isset($param_pool['ds-forum-discussions']) || empty($param_pool['ds-forum-discussions'])) 
+			if(!$Members->Member->isLoggedIn() || !isset($param_pool['ds-forum-discussions']) || empty($param_pool['ds-forum-discussions'])) 
 				$result = $this->emptyXMLSet();
 			
 			else{
 				
-				if(!$members->Member) $members->initialiseMemberObject();
-				$member_id = $members->Member->get('id');
+				if(!$Members->Member->Member) $Members->Member->initialiseMemberObject();
+				$member_id = $Members->Member->Member->get('id');
 				
 				$member_read_cutoff_date = Symphony::Database()->fetchVar('local', 0, 
 					sprintf("SELECT `local` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d LIMIT 1", Discussion::getUnreadCutoffField(), $member_id)
