@@ -39,16 +39,16 @@
 			$action = $_REQUEST['forum-action'];	
 			
 			$Forum = Symphony::ExtensionManager()->create('forum');
-			$members = Symphony::ExtensionManager()->create('members');
+			$Members = Symphony::ExtensionManager()->create('members');
 		
 			$discussion_id = (int)$this->_env['param']['discussion-id'];
 			if($action != 'mark-all-as-read' && $discussion_id < 1) return;
 			
-			$members->Member->initialiseCookie();
-			$isLoggedIn = $members->Member->isLoggedIn();
+			$Members->Member->initialiseCookie();
+			$isLoggedIn = $Members->Member->isLoggedIn();
 			
 			if($isLoggedIn){
-				$members->Member->initialiseMemberObject();	
+				$Members->Member->initialiseMemberObject();	
 			}
 			
 			if(isset($action) 
@@ -64,8 +64,8 @@
 
 				if(isset($action)){
 					
-					if($isLoggedIn && is_object($members->Member->Member)){
-						$role_data = $members->Member->Member->getData($members::getConfigVar('role'));
+					if($isLoggedIn && is_object($Members->Member->Member)){
+						$role_data = $Members->Member->Member->getData($Members::getConfigVar('role'));
 					}
 
 					$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
@@ -108,7 +108,7 @@
 					
 						case 'remove':
 								
-								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$members->Member->Member->get('id'), $discussion_id) : false);
+								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->Member->Member->get('id'), $discussion_id) : false);
 								
 								if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 									$Forum->Discussion->remove($discussion_id);
@@ -123,7 +123,7 @@
 							
 							if($comment_id < 1) break;
 							
-							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$members->Member->Member->get('id'), $comment_id) : false);
+							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->Member->Member->get('id'), $comment_id) : false);
 							
 							if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
@@ -133,12 +133,12 @@
 							break;
 							
 						case 'mark-all-as-read':
-							$Forum->Discussion->markAllAsRead($members->Member->Member->get('id'));
+							$Forum->Discussion->markAllAsRead($Members->Member->Member->get('id'));
 							$success = true;
 							break;
 					}
 					
-					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($members->Member->Member->get('id'), $discussion_id);
+					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($Members->Member->Member->get('id'), $discussion_id);
 					
 					if($success) redirect(preg_replace('/\?.*$/i', NULL, $_SERVER['REQUEST_URI']));
 					else{
@@ -152,9 +152,9 @@
 				
 			}
 
-			if(is_object($members->Member->Member)){
+			if(is_object($Members->Member->Member)){
 				try{
-					$Forum->Discussion->updateRead($members->Member->Member->get('id'), $discussion_id);
+					$Forum->Discussion->updateRead($Members->Member->Member->get('id'), $discussion_id);
 				}
 				catch(Exception $e){
 					//Do nothing
