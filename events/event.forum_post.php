@@ -164,7 +164,7 @@
 			$Members->Member->initialiseMemberObject();	
 			
 			if($isLoggedIn && is_object($Members->Member->Member)){
-				$role_data = $Members->Member->Member->getData($Members::getConfigVar('role'));
+				$role_data = $Members->Member->Member->getData($Members->getConfigVar('role'));
 			}
 
 			$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
