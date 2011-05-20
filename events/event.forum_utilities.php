@@ -65,7 +65,8 @@
 				if(isset($action)){
 					
 					if($isLoggedIn && is_object($Members->getMemberDriver()->getMember())){
-						$role_data = $Members->getMemberDriver()->getMember()->getData($Members->getSetting('role'));
+						$member = $Members->getMemberDriver()->getMember();
+						$role_data = $member->getData($Members->getSetting('role'));
 					}
 
 					$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
@@ -108,7 +109,7 @@
 					
 						case 'remove':
 								
-								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $discussion_id) : false);
+								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$member->get('id'), $discussion_id) : false);
 								
 								if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 									$Forum->Discussion->remove($discussion_id);
@@ -123,7 +124,7 @@
 							
 							if($comment_id < 1) break;
 							
-							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $comment_id) : false);
+							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$member->get('id'), $comment_id) : false);
 							
 							if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
@@ -133,12 +134,12 @@
 							break;
 							
 						case 'mark-all-as-read':
-							$Forum->Discussion->markAllAsRead($Members->getMemberDriver()->getMember()->get('id'));
+							$Forum->Discussion->markAllAsRead($member->get('id'));
 							$success = true;
 							break;
 					}
 					
-					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $discussion_id);
+					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($member->get('id'), $discussion_id);
 					
 					if($success) redirect(preg_replace('/\?.*$/i', NULL, $_SERVER['REQUEST_URI']));
 					else{
@@ -152,9 +153,9 @@
 				
 			}
 
-			if(is_object($Members->getMemberDriver()->getMember())){
+			if(is_object($member)){
 				try{
-					$Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $discussion_id);
+					$Forum->Discussion->updateRead($member->get('id'), $discussion_id);
 				}
 				catch(Exception $e){
 					//Do nothing

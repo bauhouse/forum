@@ -164,7 +164,8 @@
 			$Members->getMemberDriver()->initialiseMemberObject();	
 			
 			if($isLoggedIn && is_object($Members->getMemberDriver()->getMember())){
-				$role_data = $Members->getMemberDriver()->getMember()->getData($Members->getSetting('role'));
+				$member = $Members->getMemberDriver()->getMember();
+				$role_data = $member->getData($Members->getSetting('role'));
 			}
 
 			$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
@@ -215,7 +216,7 @@
 						return $result;
 					}
 
-					if($isLoggedIn) $Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $oDiscussion->get('id'));
+					if($isLoggedIn) $Forum->Discussion->updateRead($member->get('id'), $oDiscussion->get('id'));
 				
 					$success = true;
 					$discussion_id = $oDiscussion->get('id');
@@ -227,7 +228,7 @@
 			
 			elseif(isset($action['forum-edit-discussion'])):
 				
-				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $entry_id) : false);
+				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$member->get('id'), $entry_id) : false);
 				
 				if($role->canProcessEvent('forum', 'edit_discussion', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_discussion', $role_permission))){
 				
@@ -263,12 +264,12 @@
 							));
 							
 							$oDiscussion->Entry()->setData(Discussion::getLastPostField(), array(
-								'relation_id' => $Members->getMemberDriver()->getMember()->get('id')
+								'relation_id' => $member->get('id')
 							));
 							
 							$oDiscussion->Entry()->commit();
 							
-							$Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $comment[$comment_discussion_id_field_handle]);
+							$Forum->Discussion->updateRead($member->get('id'), $comment[$comment_discussion_id_field_handle]);
 						}
 				
 						$success = true;
@@ -286,7 +287,7 @@
 			
 			elseif(isset($action['forum-edit-comment'])):
 				
-				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $entry_id) : false);
+				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$member->get('id'), $entry_id) : false);
 				
 				if($role->canProcessEvent('forum', 'edit_comment', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_comment', $role_permission))){
 
