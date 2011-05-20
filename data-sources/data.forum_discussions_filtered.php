@@ -70,15 +70,15 @@
 		public function grab(&$param_pool){
 
 			$Members = Symphony::ExtensionManager()->create('members');
-			$Members->Member->initialiseCookie();
+			$Members->getMemberDriver()->initialiseCookie();
 			
 			// If not logged in, redirect to 403 Forbidden page
-			if($Members->Member->isLoggedIn() !== true){
+			if($Members->getMemberDriver()->isLoggedIn() !== true){
 				redirect(URL . '/forbidden/');
 				exit();
 			}
 
-			$member = $Members->Member->Member;
+			$member = $Members->getMemberDriver()->getMember();
 			$member_id = $member->get('id');
 
 			$result = new XMLElement($this->dsParamROOTELEMENT);

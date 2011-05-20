@@ -33,15 +33,15 @@
 			$Forum = Symphony::ExtensionManager()->create('forum');
 			$Members = Symphony::ExtensionManager()->create('members');
 		
-			$Members->Member->initialiseCookie();
+			$Members->getMemberDriver()->initialiseCookie();
 
-			if(!$Members->Member->isLoggedIn() || !isset($param_pool['ds-forum-discussions']) || empty($param_pool['ds-forum-discussions'])) 
+			if(!$Members->getMemberDriver()->isLoggedIn() || !isset($param_pool['ds-forum-discussions']) || empty($param_pool['ds-forum-discussions'])) 
 				$result = $this->emptyXMLSet();
 			
 			else{
 				
-				if(!$Members->Member->Member) $Members->Member->initialiseMemberObject();
-				$member_id = $Members->Member->Member->get('id');
+				if(!$Members->getMemberDriver()->getMember()) $Members->getMemberDriver()->initialiseMemberObject();
+				$member_id = $Members->getMemberDriver()->getMember()->get('id');
 				
 				$member_read_cutoff_date = Symphony::Database()->fetchVar('local', 0, 
 					sprintf("SELECT `local` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d LIMIT 1", Discussion::getUnreadCutoffField(), $member_id)

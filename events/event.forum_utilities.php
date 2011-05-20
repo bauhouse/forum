@@ -44,11 +44,11 @@
 			$discussion_id = (int)$this->_env['param']['discussion-id'];
 			if($action != 'mark-all-as-read' && $discussion_id < 1) return;
 			
-			$Members->Member->initialiseCookie();
-			$isLoggedIn = $Members->Member->isLoggedIn();
+			$Members->getMemberDriver()->initialiseCookie();
+			$isLoggedIn = $Members->getMemberDriver()->isLoggedIn();
 			
 			if($isLoggedIn){
-				$Members->Member->initialiseMemberObject();	
+				$Members->getMemberDriver()->initialiseMemberObject();	
 			}
 			
 			if(isset($action) 
@@ -64,8 +64,8 @@
 
 				if(isset($action)){
 					
-					if($isLoggedIn && is_object($Members->Member->Member)){
-						$role_data = $Members->Member->Member->getData($Members->getConfigVar('role'));
+					if($isLoggedIn && is_object($Members->getMemberDriver()->getMember())){
+						$role_data = $Members->getMemberDriver()->getMember()->getData($Members->getSetting('role'));
 					}
 
 					$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
@@ -108,7 +108,7 @@
 					
 						case 'remove':
 								
-								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->Member->Member->get('id'), $discussion_id) : false);
+								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $discussion_id) : false);
 								
 								if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 									$Forum->Discussion->remove($discussion_id);
@@ -123,7 +123,7 @@
 							
 							if($comment_id < 1) break;
 							
-							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->Member->Member->get('id'), $comment_id) : false);
+							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$Members->getMemberDriver()->getMember()->get('id'), $comment_id) : false);
 							
 							if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
@@ -133,12 +133,12 @@
 							break;
 							
 						case 'mark-all-as-read':
-							$Forum->Discussion->markAllAsRead($Members->Member->Member->get('id'));
+							$Forum->Discussion->markAllAsRead($Members->getMemberDriver()->getMember()->get('id'));
 							$success = true;
 							break;
 					}
 					
-					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($Members->Member->Member->get('id'), $discussion_id);
+					if($action != 'mark-all-as-read' && $isLoggedIn) $Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $discussion_id);
 					
 					if($success) redirect(preg_replace('/\?.*$/i', NULL, $_SERVER['REQUEST_URI']));
 					else{
@@ -152,9 +152,9 @@
 				
 			}
 
-			if(is_object($Members->Member->Member)){
+			if(is_object($Members->getMemberDriver()->getMember())){
 				try{
-					$Forum->Discussion->updateRead($Members->Member->Member->get('id'), $discussion_id);
+					$Forum->Discussion->updateRead($Members->getMemberDriver()->getMember()->get('id'), $discussion_id);
 				}
 				catch(Exception $e){
 					//Do nothing
