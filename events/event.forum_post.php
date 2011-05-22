@@ -131,7 +131,7 @@
 		
 		protected function __trigger(){
 
-			$role_permission = 0;
+			$role_permission = EventPermissions::NO_PERMISSIONS;
 
 			$result = new XMLElement('forum-post');
 			

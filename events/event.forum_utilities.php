@@ -40,7 +40,7 @@
 			
 			$Forum = Symphony::ExtensionManager()->create('forum');
 			$Members = Symphony::ExtensionManager()->create('members');
-		
+
 			$discussion_id = (int)$this->_env['param']['discussion-id'];
 			if($action != 'mark-all-as-read' && $discussion_id < 1) return;
 			
@@ -100,7 +100,7 @@
 							if($action == 'unpin') $action_resolved = 'pin';
 							elseif($action == 'open') $action_resolved = 'close';
 							
-							if($role->canProcessEvent('forum_utilities', 'edit', 2)){
+							if($role->canProcessEvent('forum_utilities', 'edit', EventPermissions::ALL_ENTRIES)){
 								$Forum->Discussion->$action($discussion_id);
 								$success = true;
 							}
@@ -111,7 +111,7 @@
 								
 								$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$member->get('id'), $discussion_id) : false);
 								
-								if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
+								if($role->canProcessEvent('forum_utilities', 'edit', EventPermissions::ALL_ENTRIES) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', EventPermissions::OWN_ENTRIES))){
 									$Forum->Discussion->remove($discussion_id);
 									redirect(URL . '/forum/');
 								}
@@ -126,7 +126,7 @@
 							
 							$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$member->get('id'), $comment_id) : false);
 							
-							if($role->canProcessEvent('forum_utilities', 'edit', 2) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', 1))){
+							if($role->canProcessEvent('forum_utilities', 'edit', EventPermissions::ALL_ENTRIES) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', EventPermissions::OWN_ENTRIES))){
 								$Forum->Discussion->removeComment($comment_id, $discussion_id);
 								$success = true;								
 							}
