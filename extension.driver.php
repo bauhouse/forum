@@ -43,6 +43,8 @@
 					KEY `member_id` (`member_id`,`discussion_id`)
 				)");
 
+			Symphony::Configuration()->set('redirect-path', '/forum/', 'forum');
+
 		}
 
 		public function getSubscribedDelegates(){
@@ -125,6 +127,11 @@
 			$div->appendChild($this->createFieldSelector('Comment Creation Date', 'comment-creation-date-field', 'date', $sections));
 			$div->appendChild($this->createFieldSelector('Comment Text Field', 'comment-field', 'textarea', $sections));
 			$group->appendChild($div);
+
+			$redirect_path = Symphony::Configuration()->get('redirect-path', 'forum');
+			$label = new XMLElement('label', __('Redirect Path'));
+			$label->appendChild(Widget::Input('settings[forum][redirect-path]', $redirect_path, 'text'));
+			$group->appendChild($label);
 
 			$context['wrapper']->appendChild($group);
 

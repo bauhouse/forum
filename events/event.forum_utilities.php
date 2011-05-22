@@ -113,7 +113,7 @@
 								
 								if($role->canProcessEvent('forum_utilities', 'edit', EventPermissions::ALL_ENTRIES) || ($is_owner && $role->canProcessEvent('forum_utilities', 'edit', EventPermissions::OWN_ENTRIES))){
 									$Forum->Discussion->remove($discussion_id);
-									redirect(URL . '/forum/');
+									redirect(URL . Symphony::Configuration()->get('redirect-path', 'forum'));
 								}
 											
 							break;
