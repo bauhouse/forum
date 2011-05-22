@@ -131,8 +131,6 @@
 		
 		protected function __trigger(){
 
-			$role_permission = EventPermissions::NO_PERMISSIONS;
-
 			$result = new XMLElement('forum-post');
 			
 			$fields = $_POST['fields'];
@@ -203,7 +201,7 @@
 			
 			if(isset($action['forum-new-discussion'])):
 
-				if($role->canProcessEvent('forum', 'start_discussion', $role_permission)){
+				if($role->canProcessEvent('forum', 'start_discussion', EventPermissions::CREATE)){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, NULL, $cookie)) return $result;
 
@@ -230,7 +228,7 @@
 				
 				$is_owner = ($isLoggedIn ? $Forum->Discussion->isDiscussionOwner((int)$member->get('id'), $entry_id) : false);
 				
-				if($role->canProcessEvent('forum', 'edit_discussion', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_discussion', $role_permission))){
+				if($role->canProcessEvent('forum', 'edit_discussion', EventPermissions::ALL_ENTRIES) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_discussion', EventPermissions::OWN_ENTRIES))){
 				
 					if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $entry_id, $cookie)) return $result;
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $discussion['comment-id'], $cookie)) return $result;
@@ -249,7 +247,7 @@
 
 				$isOpen = Symphony::Database()->fetchVar('value', 0, 'SELECT `value` FROM `tbl_entries_data_'.$oDiscussion->getLockedField().'` WHERE `entry_id` = '.$oDiscussion->Entry()->get('id').' LIMIT 1');
 								
-				if($role->canProcessEvent('forum', 'add_comment', $role_permission) && $isOpen == 'no'){
+				if($role->canProcessEvent('forum', 'add_comment', EventPermissions::CREATE) && $isOpen == 'no'){
 
 					//if(!$oDiscussion = $this->__doit($Forum->getDiscussionSectionID(), $discussion, $result, $comment[$comment_discussion_id_field_handle], $cookie)) return $result;
 					
@@ -289,7 +287,7 @@
 				
 				$is_owner = ($isLoggedIn ? $Forum->Discussion->isCommentOwner((int)$member->get('id'), $entry_id) : false);
 				
-				if($role->canProcessEvent('forum', 'edit_comment', $role_permission) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_comment', $role_permission))){
+				if($role->canProcessEvent('forum', 'edit_comment', EventPermissions::ALL_ENTRIES) || ($is_owner && $role->canProcessEvent('forum', 'edit_own_comment', EventPermissions::OWN_ENTRIES))){
 
 					if(!$oComment = $this->__doit($Forum->getCommentSectionID(), $comment, $result, $entry_id, $cookie)) return $result;
 				
