@@ -66,7 +66,8 @@
 					
 					if($isLoggedIn && is_object($Members->getMemberDriver()->getMember())){
 						$member = $Members->getMemberDriver()->getMember();
-						$role_data = $member->getData($Members->getSetting('role'));
+						$role_field_id = $Members->getField('role')->get('id');
+						$role_data = $member->getData($role_field_id);
 					}
 
 					$role = RoleManager::fetch(($isLoggedIn ? $role_data['role_id'] : 1), true);
