@@ -19,8 +19,8 @@
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://www.pointybeard.com',
 										   'email' => 'alistair@pointybeard.com'),
-						 'version' => '1.0',
-						 'release-date' => '2008-04-12',
+						 'version' => '2.0',
+						 'release-date' => '2011-06-19',
 						 'trigger-condition' => 'existence of a member cookie and discussion id',						 
 					);						 
 		}

@@ -10,7 +10,7 @@
 		public function about(){
 			return array('name' => 'Forum',
 						 'version' => '2.0 Alpha',
-						 'release-date' => '2008-04-12',
+						 'release-date' => '2011-06-19',
 						 'author' => array('name' => 'Symphony Team',
 										   'website' => 'http://www.symphony21.com',
 										   'email' => 'team@symphony21.com')
