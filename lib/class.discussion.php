@@ -189,8 +189,8 @@
 			
 			$member = $this->_entry->getData(self::getMemberField());
 
-			return ($member['member_id'] == $member_id);			
-			
+			return ($member['relation_id'] == $member_id);
+
 		}
 		
 		public function isCommentOwner($member_id, $comment_id){
@@ -201,7 +201,7 @@
 
 			$member = $comment[0]->getData(self::getCommentCreatedByField());
 
-			return ($member['member_id'] == $member_id);
+			return ($member['relation_id'] == $member_id);
 
 		}	
 	
